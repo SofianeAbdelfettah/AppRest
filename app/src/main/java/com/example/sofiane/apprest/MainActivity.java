@@ -19,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -59,7 +58,11 @@ public class MainActivity extends AppCompatActivity {
                 if (!albums.isNull(position)) {
                     Intent i = new Intent(getApplicationContext(), FullScreenActivity.class);
                     try {
+                        i.putExtra("title",inputtxt.getText().toString());
                         i.putExtra("url", albums.getJSONObject(position).getString("webformatURL"));
+                        i.putExtra("tags",albums.getJSONObject(position).getString("tags"));
+                        i.putExtra("downloads",albums.getJSONObject(position).getString("downloads"));
+                        i.putExtra("likesnb",albums.getJSONObject(position).getString("likes"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -81,11 +84,13 @@ public class MainActivity extends AppCompatActivity {
             rqGetAllAlbums.put("q",inputtxt.getText().toString());
             } else {
             ArrayList<String> randomsearch = new ArrayList<String>();
-            randomsearch.add("flower");
-            randomsearch.add("home");
-            randomsearch.add("cars");
+            randomsearch.add("Travel");
+            randomsearch.add("Japan");
+            randomsearch.add("Ocean");
             Random random = new Random();
-            rqGetAllAlbums.put("q", randomsearch.get(random.nextInt(randomsearch.size())));
+            String search = randomsearch.get(random.nextInt(randomsearch.size()));
+            rqGetAllAlbums.put("q", search);
+            inputtxt.setText(search);
         }
 
         rqGetAllAlbums.put("pretty", "true");
@@ -96,18 +101,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceiveData(JSONObject jsonObject) {
                 try {
-                    albums = jsonObject.getJSONArray("hits");
-                    ArrayList<String> imgapi= new ArrayList<String>();
-                    for (int i = 0; i < albums.length(); i++) {
-                        imgapi.add(albums.getJSONObject(i).getString("previewURL"));
+                    if (jsonObject.getInt("totalHits") != 0) {
+                        albums = jsonObject.getJSONArray("hits");
+                        ArrayList<String> imgapi = new ArrayList<String>();
+                        for (int i = 0; i < albums.length(); i++) {
+                            imgapi.add(albums.getJSONObject(i).getString("previewURL"));
+                        }
+                        gridView.setAdapter(new ImageAdapter(cx, imgapi));
+                    }   else{
+                        Toast.makeText(cx,"Aucun Résultats",Toast.LENGTH_LONG).show();
                     }
-                    gridView.setAdapter(new ImageAdapter(cx,imgapi));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-
         arc.execute(rqGetAllAlbums);
     }
 }

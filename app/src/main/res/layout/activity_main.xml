@@ -10,7 +10,8 @@
         android:id="@+id/searchinput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:gravity="center"
+        />
 
     <Button
         android:id="@+id/btnLoad"
@@ -28,6 +29,7 @@
             android:verticalSpacing="10dp"
             android:horizontalSpacing="10dp"
             android:stretchMode="columnWidth"
-            android:gravity="center" />
+            android:gravity="center"
+            />
 
 </android.support.v7.widget.LinearLayoutCompat>
